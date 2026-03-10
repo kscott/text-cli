@@ -62,22 +62,6 @@ public func formatPhone(_ s: String) -> String {
     return "(\(area)) \(mid)-\(last)"
 }
 
-/// Given a chat identifier (phone number or email from chat.db),
-/// return the display name from the contacts list.
-/// Returns nil if no match found.
-public func resolveIdentifier(_ identifier: String,
-                               contacts: [MessageContact]) -> String? {
-    for contact in contacts {
-        if contact.phones.contains(where: { phoneMatches($0, identifier) }) {
-            return contact.name
-        }
-        if contact.emails.contains(where: { $0.lowercased() == identifier.lowercased() }) {
-            return contact.name
-        }
-    }
-    return nil
-}
-
 /// Find a contact's send address given a name, phone number, or email.
 /// Returns `(displayName, address)` where address is what Messages.app will accept.
 /// Returns nil if no contact matched and input doesn't look like a direct address.
@@ -105,18 +89,7 @@ public func resolveSendTarget(_ input: String,
     }
     guard let contact = matched.first else { return nil }
 
-    // Prefer mobile > iPhone > main > any
-    let preferredLabels = ["mobile", "iphone", "main"]
-    var bestPhone: String? = nil
-    for label in preferredLabels {
-        if let p = contact.phones.first(where: { phoneLabel($0, contact: contact, label: label) }) {
-            bestPhone = p
-            break
-        }
-    }
-    let phone = bestPhone ?? contact.phones.first
-
-    if let phone {
+    if let phone = contact.phones.first {
         return (name: contact.name, address: normalizePhone(phone))
     }
     if let email = contact.emails.first {
@@ -125,9 +98,3 @@ public func resolveSendTarget(_ input: String,
     return nil
 }
 
-// Stub — label matching is done in main.swift with CNContact label info.
-// This variant matches on phone value only (used when labels aren't available).
-private func phoneLabel(_ phone: String, contact: MessageContact, label: String) -> Bool {
-    // Without label data we can't filter — always false so we fall through to first
-    return false
-}

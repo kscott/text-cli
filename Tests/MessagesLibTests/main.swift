@@ -101,33 +101,13 @@ t.suite("formatPhone — non-US pass-through") {
     t.expect("email unchanged",                formatPhone("user@example.com") == "user@example.com")
 }
 
-// MARK: - resolveIdentifier
+// MARK: - resolveSendTarget
 
 let alice   = MessageContact(name: "Alice Smith",   phones: ["+15551234567"], emails: ["alice@example.com"])
 let bob     = MessageContact(name: "Bob Jones",     phones: ["(555) 999-8888"], emails: [])
 let charlie = MessageContact(name: "Charlie Brown", phones: [], emails: ["cbrown@peanuts.com"])
 
 let allContacts = [alice, bob, charlie]
-
-t.suite("resolveIdentifier — phone number matching") {
-    t.expect("E.164 matches exactly",          resolveIdentifier("+15551234567", contacts: allContacts) == "Alice Smith")
-    t.expect("formatted phone matches",        resolveIdentifier("(555) 999-8888", contacts: allContacts) == "Bob Jones")
-    t.expect("last-10-digits match",           resolveIdentifier("5551234567", contacts: allContacts) == "Alice Smith")
-}
-
-t.suite("resolveIdentifier — email matching") {
-    t.expect("exact email matches",            resolveIdentifier("alice@example.com", contacts: allContacts) == "Alice Smith")
-    t.expect("email case-insensitive",         resolveIdentifier("ALICE@EXAMPLE.COM", contacts: allContacts) == "Alice Smith")
-    t.expect("cbrown matches Charlie",         resolveIdentifier("cbrown@peanuts.com", contacts: allContacts) == "Charlie Brown")
-}
-
-t.suite("resolveIdentifier — no match") {
-    t.expect("unknown number returns nil",     resolveIdentifier("+19995550000", contacts: allContacts) == nil)
-    t.expect("unknown email returns nil",      resolveIdentifier("nobody@nowhere.com", contacts: allContacts) == nil)
-    t.expect("empty list returns nil",         resolveIdentifier("+15551234567", contacts: []) == nil)
-}
-
-// MARK: - resolveSendTarget
 
 t.suite("resolveSendTarget — direct phone input") {
     let r = resolveSendTarget("5551234567", contacts: allContacts)
