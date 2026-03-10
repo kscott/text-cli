@@ -23,6 +23,8 @@ func usage() -> Never {
     Usage:
       sms send <contact> <message...>     # Send a message
       sms open [contact]                  # Open Messages.app
+
+    Feedback: https://github.com/kscott/get-clear/issues
     """)
     exit(0)
 }
