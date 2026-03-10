@@ -1,0 +1,4 @@
+# Compiled binary — build locally with `./sms setup`
+sms-bin
+.DS_Store
+.build/

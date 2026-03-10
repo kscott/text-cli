@@ -1,0 +1,39 @@
+#!/bin/bash
+# sms — wrapper script for sms-bin
+#
+# Source lives at:  ~/dev/sms-cli/
+# Binary lives at:  ~/bin/sms-bin
+# Symlink at:       ~/bin/sms -> ~/dev/sms-cli/sms
+#
+# To set up on a new machine:
+#   ~/dev/sms-cli/sms setup
+#
+# To run tests:
+#   ~/dev/sms-cli/sms test
+
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+BINARY="$HOME/bin/sms-bin"
+SYMLINK="$HOME/bin/sms"
+
+if [[ "$1" == "setup" ]]; then
+  echo "Building $SCRIPT_DIR..."
+  swift build -c release --package-path "$SCRIPT_DIR" 2>&1 || { echo "Build failed."; exit 1; }
+  echo "Build OK."
+
+  cp "$SCRIPT_DIR/.build/release/sms-bin" "$BINARY" || { echo "Copy failed."; exit 1; }
+  echo "Installed binary to $BINARY."
+
+  echo "Creating symlink $SYMLINK -> $SCRIPT_DIR/sms..."
+  ln -sf "$SCRIPT_DIR/sms" "$SYMLINK" || { echo "Symlink failed."; exit 1; }
+  echo "Done. Run 'sms' to get started."
+  exit 0
+fi
+
+if [[ "$1" == "test" ]]; then
+  swift build --package-path "$SCRIPT_DIR" 2>&1 || { echo "Build failed."; exit 1; }
+  BIN_PATH="$(swift build --package-path "$SCRIPT_DIR" --show-bin-path 2>/dev/null)"
+  "$BIN_PATH/sms-tests"
+  exit $?
+fi
+
+exec "$BINARY" "$@"
