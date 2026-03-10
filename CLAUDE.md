@@ -1,6 +1,6 @@
 # sms-cli
 
-Swift CLI for iMessage/SMS via Messages.app and chat.db.
+Swift CLI for sending iMessages and SMS via Messages.app.
 
 ## Build & run
 
@@ -12,7 +12,7 @@ sms test    # build and run test suite
 ## Project structure
 
 - `Sources/MessagesLib/PhoneNormalizer.swift` — pure phone normalization and contact resolution
-- `Sources/MessagesCLI/main.swift` — CLI entry point: SQLite, AppleScript, CNContactStore
+- `Sources/MessagesCLI/main.swift` — CLI entry point: AppleScript send, CNContactStore
 - `Tests/MessagesLibTests/main.swift` — custom test runner (no Xcode/XCTest required)
 - `sms` — bash wrapper script, symlinked into `~/bin`
 
@@ -22,22 +22,19 @@ See [DEVELOPMENT.md](DEVELOPMENT.md) for coding conventions and patterns.
 
 ```
 sms send <contact> <message...>     # Send an iMessage or SMS
-sms list [n]                        # Recent conversations (default 10)
-sms show <contact>                  # Message history with a contact
 sms open [contact]                  # Open Messages.app
 ```
 
 ## Key decisions
 
-- **AppleScript for send** — no public Swift framework for sending iMessages; osascript via Messages.app is the standard approach
-- **SQLite for read** — direct read from chat.db is fast; avoids slow AppleScript enumeration
+- **Send only** — iMessage has no public read API; chat.db requires Full Disk Access and an undocumented schema — not the right tradeoff for a fire-and-forget tool
+- **AppleScript for send** — no public Swift framework for sending iMessages; osascript via Messages.app is the standard approach and fast for a single message
 - **MessagesLib separated from MessagesCLI** — phone normalization and matching are testable without permissions
 - **Custom test runner** — works with CLT only, no full Xcode needed
 
 ## Permissions
 
 - Contacts access — prompted at first run (CNContactStore)
-- Full Disk Access — required for chat.db reads (grant to Terminal/iTerm2 in System Settings)
 
 ## Adding a new command
 

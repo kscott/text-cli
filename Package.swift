@@ -18,7 +18,6 @@ let package = Package(
             path: "Sources/MessagesCLI",
             linkerSettings: [
                 .linkedFramework("Contacts"),
-                .linkedLibrary("sqlite3"),
             ]
         ),
         // Test runner — no Xcode required
