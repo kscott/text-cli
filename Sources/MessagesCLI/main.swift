@@ -107,8 +107,8 @@ func sendViaMessages(to address: String, message: String) throws {
 // MARK: - Dispatch
 
 guard let cmd = args.first else { usage() }
-if cmd == "--version" || cmd == "-v" { print(version); exit(0) }
-if cmd == "--help"    || cmd == "-h" { usage() }
+if cmd == "--version" || cmd == "-v" || cmd == "version" { print(version); exit(0) }
+if cmd == "--help"    || cmd == "-h" || cmd == "help"    { usage() }
 
 let store     = CNContactStore()
 let semaphore = DispatchSemaphore(value: 0)
