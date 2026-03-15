@@ -4,28 +4,13 @@
 // Contacts access for name/phone resolution, osascript for sending via Messages.app.
 // Phone normalization and matching delegated to MessagesLib.
 
-import Darwin
 import Foundation
 import Contacts
 import MessagesLib
-
-// MARK: - ANSI color
-
-private let ansiEnabled: Bool = {
-    ProcessInfo.processInfo.environment["NO_COLOR"] == nil &&
-    isatty(STDOUT_FILENO) != 0
-}()
-
-private func bold(_ s: String) -> String { ansiEnabled ? "\u{1B}[1m\(s)\u{1B}[0m" : s }
-private func dim(_ s: String)  -> String { ansiEnabled ? "\u{1B}[2m\(s)\u{1B}[0m" : s }
+import GetClearKit
 
 let version = "1.0.0"
 let args    = Array(CommandLine.arguments.dropFirst())
-
-func fail(_ msg: String) -> Never {
-    fputs("Error: \(msg)\n", stderr)
-    exit(1)
-}
 
 func usage() -> Never {
     print("""
@@ -120,8 +105,8 @@ func sendViaMessages(to address: String, message: String) throws {
 // MARK: - Dispatch
 
 guard let cmd = args.first else { usage() }
-if cmd == "--version" || cmd == "-v" || cmd == "version" { print(version); exit(0) }
-if cmd == "--help"    || cmd == "-h" || cmd == "help"    { usage() }
+if isVersionFlag(cmd) { print(version); exit(0) }
+if isHelpFlag(cmd)    { usage() }
 
 let store     = CNContactStore()
 let semaphore = DispatchSemaphore(value: 0)
@@ -158,7 +143,7 @@ store.requestAccess(for: .contacts) { granted, _ in
                 throw SMSError.notFound(query)
             }
             try sendViaMessages(to: target.address, message: message)
-            print("Sent to \(bold(target.name)) \(dim("(\(target.address))"))")
+            print("Sent to \(ANSI.bold(target.name)) \(ANSI.dim("(\(target.address))"))")
 
         default:
             usage()

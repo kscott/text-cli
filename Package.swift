@@ -4,6 +4,9 @@ import PackageDescription
 let package = Package(
     name: "sms-cli",
     platforms: [.macOS(.v14)],
+    dependencies: [
+        .package(url: "https://github.com/kscott/get-clear", branch: "main"),
+    ],
     targets: [
         // Pure logic — no framework dependencies, fully testable
         .target(
@@ -14,7 +17,10 @@ let package = Package(
         // osascript for sending via Messages.app
         .executableTarget(
             name: "sms-bin",
-            dependencies: ["MessagesLib"],
+            dependencies: [
+                "MessagesLib",
+                .product(name: "GetClearKit", package: "get-clear"),
+            ],
             path: "Sources/MessagesCLI",
             linkerSettings: [
                 .linkedFramework("Contacts"),
