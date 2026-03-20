@@ -143,6 +143,7 @@ store.requestAccess(for: .contacts) { granted, _ in
                 throw SMSError.notFound(query)
             }
             try sendViaMessages(to: target.address, message: message)
+            try? ActivityLog.write(tool: "sms", cmd: "send", desc: "\(target.name): \(message)", container: nil)
             print("Sent to \(ANSI.bold(target.name)) \(ANSI.dim("(\(target.address))"))")
 
         default:
