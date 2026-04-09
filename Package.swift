@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "sms-cli",
+    name: "text-cli",
     platforms: [.macOS(.v14)],
     dependencies: [
         .package(url: "https://github.com/kscott/get-clear.git", branch: "main"),
@@ -10,27 +10,27 @@ let package = Package(
     targets: [
         // Pure logic — no framework dependencies, fully testable
         .target(
-            name: "MessagesLib",
-            path: "Sources/MessagesLib"
+            name: "TextLib",
+            path: "Sources/TextLib"
         ),
         // Main binary — Contacts for lookup, sqlite3 for reading history,
         // osascript for sending via Messages.app
         .executableTarget(
-            name: "sms-bin",
+            name: "text-bin",
             dependencies: [
-                "MessagesLib",
+                "TextLib",
                 .product(name: "GetClearKit", package: "get-clear"),
             ],
-            path: "Sources/MessagesCLI",
+            path: "Sources/TextCLI",
             linkerSettings: [
                 .linkedFramework("Contacts"),
             ]
         ),
         // Test runner — no Xcode required
         .executableTarget(
-            name: "sms-tests",
-            dependencies: ["MessagesLib"],
-            path: "Tests/MessagesLibTests"
+            name: "text-tests",
+            dependencies: ["TextLib"],
+            path: "Tests/TextLibTests"
         ),
     ]
 )

@@ -1,38 +1,38 @@
 #!/bin/bash
-# sms — wrapper script for sms-bin
+# text — wrapper script for text-bin
 #
-# Source lives at:  ~/dev/sms-cli/
-# Binary lives at:  ~/bin/sms-bin
-# Symlink at:       ~/bin/sms -> ~/dev/sms-cli/sms
+# Source lives at:  ~/dev/text-cli/
+# Binary lives at:  ~/bin/text-bin
+# Symlink at:       ~/bin/text -> ~/dev/text-cli/text
 #
 # To set up on a new machine:
-#   ~/dev/sms-cli/sms setup
+#   ~/dev/text-cli/text setup
 #
 # To run tests:
-#   ~/dev/sms-cli/sms test
+#   ~/dev/text-cli/text test
 
 SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
-BINARY="$HOME/bin/sms-bin"
-SYMLINK="$HOME/bin/sms"
+BINARY="$HOME/bin/text-bin"
+SYMLINK="$HOME/bin/text"
 
 if [[ "$1" == "setup" ]]; then
   echo "Building $SCRIPT_DIR..."
   swift build -c release --package-path "$SCRIPT_DIR" 2>&1 || { echo "Build failed."; exit 1; }
   echo "Build OK."
 
-  cp "$SCRIPT_DIR/.build/release/sms-bin" "$BINARY" || { echo "Copy failed."; exit 1; }
+  cp "$SCRIPT_DIR/.build/release/text-bin" "$BINARY" || { echo "Copy failed."; exit 1; }
   echo "Installed binary to $BINARY."
 
-  echo "Creating symlink $SYMLINK -> $SCRIPT_DIR/sms..."
-  ln -sf "$SCRIPT_DIR/sms" "$SYMLINK" || { echo "Symlink failed."; exit 1; }
-  echo "Done. Run 'sms' to get started."
+  echo "Creating symlink $SYMLINK -> $SCRIPT_DIR/text..."
+  ln -sf "$SCRIPT_DIR/text" "$SYMLINK" || { echo "Symlink failed."; exit 1; }
+  echo "Done. Run 'text' to get started."
   exit 0
 fi
 
 if [[ "$1" == "test" ]]; then
   swift build --package-path "$SCRIPT_DIR" 2>&1 || { echo "Build failed."; exit 1; }
   BIN_PATH="$(swift build --package-path "$SCRIPT_DIR" --show-bin-path 2>/dev/null)"
-  "$BIN_PATH/sms-tests"
+  "$BIN_PATH/text-tests"
   exit $?
 fi
 

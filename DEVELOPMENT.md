@@ -4,28 +4,28 @@ Patterns and decisions established for this project. Follow these when adding or
 
 ## Architecture: what goes where
 
-**`MessagesLib`** — pure Swift, no framework dependencies
+**`TextLib`** — pure Swift, no framework dependencies
 - Phone number normalization (`normalizePhone`, `phoneMatches`, `formatPhone`)
 - Contact name resolution (`resolveIdentifier`, `resolveSendTarget`)
 - `MessageContact` struct — name, phones, emails
 - Anything that can be expressed as `String → String` or `String → MessageContact?`
 
-**`MessagesCLI/main.swift`** — system and data access only
+**`TextCLI/main.swift`** — system and data access only
 - Argument parsing and command dispatch
-- CNContactStore for contact loading (converts to `[MessageContact]` for MessagesLib)
+- CNContactStore for contact loading (converts to `[MessageContact]` for TextLib)
 - SQLite reads from `~/Library/Messages/chat.db`
 - AppleScript via `osascript` for sending
 - Date formatting helpers
 
-The rule: if you find yourself wanting to test something that lives in `main.swift`, that's a sign it should be moved to `MessagesLib`.
+The rule: if you find yourself wanting to test something that lives in `main.swift`, that's a sign it should be moved to `TextLib`.
 
 ## Interface design: positional arguments
 
 ```
-sms send <contact> <message...>   # contact is args[1], message is args[2...]
-sms show <contact>                # contact is args[1] (joined with spaces)
-sms list [n]                      # n is optional, default 10
-sms open [contact]                # contact is optional
+text send <contact> <message...>   # contact is args[1], message is args[2...]
+text show <contact>                # contact is args[1] (joined with spaces)
+text list [n]                      # n is optional, default 10
+text open [contact]                # contact is optional
 ```
 
 Multi-word contact names need quoting for `send` (since message consumes all remaining tokens).
@@ -71,9 +71,9 @@ For group chats = a GUID-like string.
 
 ## Testing
 
-- All test-worthy logic lives in `MessagesLib`
-- Tests in `Tests/MessagesLibTests/main.swift` — custom runner, no XCTest or Xcode
-- Run with `sms test`
+- All test-worthy logic lives in `TextLib`
+- Tests in `Tests/TextLibTests/main.swift` — custom runner, no XCTest or Xcode
+- Run with `text test`
 - Cover: normalization edge cases, format variants, email pass-through, match/no-match
 
 ## Output conventions

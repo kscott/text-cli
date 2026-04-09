@@ -1,12 +1,12 @@
 // main.swift
 //
-// Entry point for sms-bin executable.
+// Entry point for text-bin executable.
 // Contacts access for name/phone resolution, osascript for sending via Messages.app.
 // Phone normalization and matching delegated to MessagesLib.
 
 import Foundation
 import Contacts
-import MessagesLib
+import TextLib
 import GetClearKit
 
 let version = builtVersion
@@ -14,11 +14,11 @@ let args    = Array(CommandLine.arguments.dropFirst())
 
 func usage() -> Never {
     print("""
-    sms \(version) — Send iMessages and SMS from the terminal
+    text \(version) — Send iMessages and SMS from the terminal
 
     Usage:
-      sms send <contact> <message...>     # Send a message
-      sms open [contact]                  # Open Messages.app
+      text send <contact> <message...>     # Send a message
+      text open [contact]                  # Open Messages.app
 
     Feedback: https://github.com/kscott/get-clear/issues
     """)
@@ -27,7 +27,7 @@ func usage() -> Never {
 
 // MARK: - Error types
 
-enum SMSError: Error, LocalizedError {
+enum TextError: Error, LocalizedError {
     case sendFailed(String)
     case notFound(String)
 
@@ -81,7 +81,7 @@ func sendViaMessages(to address: String, message: String) throws {
 
     // Write to a temp file — avoids shell arg length limits and escaping issues
     let tmpURL = FileManager.default.temporaryDirectory
-        .appendingPathComponent("sms-send-\(UUID().uuidString).applescript")
+        .appendingPathComponent("text-send-\(UUID().uuidString).applescript")
     try script.write(to: tmpURL, atomically: true, encoding: .utf8)
     defer { try? FileManager.default.removeItem(at: tmpURL) }
 
@@ -98,7 +98,7 @@ func sendViaMessages(to address: String, message: String) throws {
         let data   = errPipe.fileHandleForReading.readDataToEndOfFile()
         let errMsg = String(data: data, encoding: .utf8)?
             .trimmingCharacters(in: .whitespacesAndNewlines) ?? "AppleScript error"
-        throw SMSError.sendFailed(errMsg)
+        throw TextError.sendFailed(errMsg)
     }
 }
 
@@ -128,10 +128,10 @@ store.requestAccess(for: .contacts) { granted, _ in
                 entries  = result.entries
                 dateUsed = result.dateUsed
             } else {
-                entries = ActivityLogReader.entries(in: range.start...range.end, tool: "sms")
+                entries = ActivityLogReader.entries(in: range.start...range.end, tool: "text")
             }
             print(ActivityLogFormatter.perToolWhat(entries: entries, range: range, rangeStr: rangeStr,
-                                                   tool: "sms", dateUsed: dateUsed))
+                                                   tool: "text", dateUsed: dateUsed))
 
         case "open":
             let p = Process()
@@ -156,10 +156,10 @@ store.requestAccess(for: .contacts) { granted, _ in
             let message = args.dropFirst(2).joined(separator: " ")
 
             guard let target = resolveSendTarget(query, contacts: contacts) else {
-                throw SMSError.notFound(query)
+                throw TextError.notFound(query)
             }
             try sendViaMessages(to: target.address, message: message)
-            try? ActivityLog.write(tool: "sms", cmd: "send", desc: "\(target.name): \(message)", container: nil)
+            try? ActivityLog.write(tool: "text", cmd: "send", desc: "\(target.name): \(message)", container: nil)
             print("Sent to \(ANSI.bold(target.name)) \(ANSI.dim("(\(target.address))"))")
 
         default:

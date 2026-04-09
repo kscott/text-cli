@@ -1,12 +1,12 @@
-# sms-cli
+# text-cli
 
 Send iMessages and SMS from the terminal. Fire and forget.
 
 ## Installation
 
 ```bash
-git clone https://github.com/kscott/sms-cli ~/dev/sms-cli
-~/dev/sms-cli/sms setup
+git clone https://github.com/kscott/text-cli ~/dev/text-cli
+~/dev/text-cli/text setup
 ```
 
 **Permissions required:**
@@ -17,26 +17,26 @@ Requires macOS 14+.
 ## Commands
 
 ```
-sms send <contact> <message...>     # Send an iMessage or SMS
-sms open [contact]                  # Open Messages.app
+text send <contact> <message...>     # Send an iMessage or SMS
+text open [contact]                  # Open Messages.app
 ```
 
 ## Examples
 
 ```bash
 # Send by contact name
-sms send Alice Hey, are you free tonight?
-sms send "Alice Smith" Dinner at 7?
+text send Alice Hey, are you free tonight?
+text send "Alice Smith" Dinner at 7?
 
 # Send to a phone number directly
-sms send 555-867-5309 On my way
+text send 555-867-5309 On my way
 
 # Send to an email address (iMessage)
-sms send alice@example.com Can you call me?
+text send alice@example.com Can you call me?
 
 # Open Messages.app
-sms open
-sms open Alice     # opens directly to that conversation
+text open
+text open Alice     # opens directly to that conversation
 ```
 
 ## Contact resolution
@@ -53,8 +53,8 @@ sms open Alice     # opens directly to that conversation
 ## Build & test
 
 ```bash
-sms setup   # build release binary and install to ~/bin
-sms test    # build and run test suite (45 tests)
+text setup   # build release binary and install to ~/bin
+text test    # build and run test suite (45 tests)
 ```
 
 ## Project structure
@@ -62,7 +62,7 @@ sms test    # build and run test suite (45 tests)
 - `Sources/MessagesLib/PhoneNormalizer.swift` — phone normalization, matching, contact resolution
 - `Sources/MessagesCLI/main.swift` — AppleScript send, CNContactStore, dispatch
 - `Tests/MessagesLibTests/main.swift` — custom test runner (no Xcode/XCTest required)
-- `sms` — bash wrapper script, symlinked into `~/bin`
+- `text` — bash wrapper script, symlinked into `~/bin`
 
 ## Key decisions
 

@@ -1,10 +1,10 @@
-// main.swift — test runner for MessagesLib
+// main.swift — test runner for TextLib
 //
 // Does not require Xcode or XCTest — runs with just the Swift CLI toolchain.
-// Run via:  sms test
+// Run via:  text test
 
 import Foundation
-import MessagesLib
+import TextLib
 
 // MARK: - Minimal test harness
 
